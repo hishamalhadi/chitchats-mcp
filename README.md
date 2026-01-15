@@ -25,33 +25,96 @@ npm run build
 
 1. Get your API credentials from [Chit Chats Settings > Developer > API Access Tokens](https://chitchats.com/settings/api)
 
-2. Create a `.env` file:
-```bash
-cp .env.example .env
-```
+2. Set your credentials using **one** of these methods:
 
-3. Add your credentials to `.env`:
-```
-CHITCHATS_CLIENT_ID=your_client_id
-CHITCHATS_ACCESS_TOKEN=your_access_token
-```
+   **Option A: Environment variables in MCP config** (recommended)
+
+   Pass credentials via `-e` flags (CLI) or `env` block (JSON) - see Usage section below.
+
+   **Option B: `.env` file**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Add your credentials to `.env`:
+   ```
+   CHITCHATS_CLIENT_ID=your_client_id
+   CHITCHATS_ACCESS_TOKEN=your_access_token
+   ```
 
 ## Usage
 
-### As an MCP Server
+### Claude Code (CLI)
 
-Add to your MCP client configuration:
+Add the MCP server using the Claude Code CLI (replace the path and credentials):
+
+```bash
+claude mcp add chitchats -s user \
+  -e CHITCHATS_CLIENT_ID=your_client_id \
+  -e CHITCHATS_ACCESS_TOKEN=your_access_token \
+  -- node <ABSOLUTE_PATH_TO>/chitchats-mcp/dist/index.js
+```
+
+**Example with real path:**
+```bash
+claude mcp add chitchats -s user \
+  -e CHITCHATS_CLIENT_ID=abc123 \
+  -e CHITCHATS_ACCESS_TOKEN=sk_live_xxx \
+  -- node /Users/jane/projects/chitchats-mcp/dist/index.js
+```
+
+Or manually add to your settings file (`~/.claude/settings.json`):
 
 ```json
 {
   "mcpServers": {
     "chitchats": {
       "command": "node",
-      "args": ["/path/to/chitchats-mcp/dist/index.js"]
+      "args": ["<ABSOLUTE_PATH_TO>/chitchats-mcp/dist/index.js"],
+      "env": {
+        "CHITCHATS_CLIENT_ID": "your_client_id",
+        "CHITCHATS_ACCESS_TOKEN": "your_access_token"
+      }
     }
   }
 }
 ```
+
+**Scopes:**
+- `-s user` - Available in all projects (recommended)
+- `-s project` - Only in current project (adds to `.claude/settings.json`)
+
+Verify the server is connected:
+```bash
+claude mcp list
+```
+
+### Claude Desktop
+
+Add to your Claude Desktop config file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "chitchats": {
+      "command": "node",
+      "args": ["<ABSOLUTE_PATH_TO>/chitchats-mcp/dist/index.js"],
+      "env": {
+        "CHITCHATS_CLIENT_ID": "your_client_id",
+        "CHITCHATS_ACCESS_TOKEN": "your_access_token"
+      }
+    }
+  }
+}
+```
+
+> **Note:** Replace `<ABSOLUTE_PATH_TO>` with the actual path where you cloned the repo (e.g., `/Users/jane/projects` or `C:\Users\Jane\projects`).
+
+Restart Claude Desktop after adding the configuration.
 
 ### Available Tools
 
